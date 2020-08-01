@@ -1,0 +1,91 @@
+<style> <?php include 'css/signin.css'; ?> </style>
+<style> <?php include 'css/bootstrap.min.css'; ?> </style>
+
+<?php
+$contact_name = $_POST['inputName'];
+$color_choice = $_POST['inputColor'];
+$pet_choice = $_POST['inputPetChoice'];
+$contact_email = $_POST['inputEmail'];
+
+$servername = "localhost";
+$username = "{{ mysql_user_name }}";
+$password = "{{ mysql_user_password }}";
+$dbname = "{{ database_name }}";
+
+
+
+
+
+
+
+
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+// Check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+
+//verify name is not already in database
+$select_name = mysqli_query($conn, "SELECT `name` FROM `customers` WHERE `name` = '".$contact_name."'")
+          or exit(mysqli_error($conn));
+
+if(mysqli_num_rows($select_name)) {
+   header("Location: https://{{ application_server_addr }}/invalid_name.html");
+   exit();
+   } else {
+      //verify email is not already used
+      if(!filter_var($contact_email, FILTER_VALIDATE_EMAIL)) {
+         header("Location: https://{{ application_server_addr }}/invalid_email.html");
+      }
+
+      $select_email = mysqli_query($conn, "SELECT `email` FROM `customers` WHERE `email` = '".$contact_email."'")
+                      or exit(mysqli_error($conn));
+
+      if(mysqli_num_rows($select_email)) {
+         header("Location: https://{{ application_server_addr }}/invalid_email.html");
+         exit();
+      }
+}
+
+//proceed to registration
+$sql = "INSERT INTO customers (name, email, pet, color)
+        VALUES ('$contact_name', '$contact_email', '$pet_choice', '$color_choice')";
+
+if (mysqli_query($conn, $sql)) {
+} else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+
+$sql_select = "SELECT * FROM customers WHERE name='$contact_name'";
+$result = $conn->query($sql_select);
+
+if ($result->num_rows > 0) {
+    // output data on each row
+    while($subscriber_row = $result->fetch_assoc()) {
+
+
+  echo "  <div class='text-center jumbotron'>";
+  echo "  <div align='center'>";
+  echo "  <h1>";
+  echo "  Hold On, ".$subscriber_row['name']."! You Will Be Redirected In A Short Moment! <br/>";
+  echo "  Don't Refresh or Press Back";
+  echo "  </h1>";
+  echo "  </div>";
+  echo "  <form method='post' action='https://{{ application_server_addr }}/registration_complete.php' id='redirect-form' style='display: none'>";
+  echo "  <input type='text' name='inputName' value='".$subscriber_row['name']."'>";
+  echo "  <input type='text' name='inputEmail' value='".$subscriber_row['email']."'>";
+  echo "  </form>";
+  echo "  <p class='mt-5 mb-3 text-muted'>&copy; 2020</p>";
+  echo "  </div>";
+
+  echo "  <body onload=\"document.getElementById('redirect-form').submit();\">";
+
+
+    }
+} else {
+    echo "0 results";
+}
+
+mysqli_close($conn);

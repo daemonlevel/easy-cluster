@@ -1,0 +1,9 @@
+- name: Set up apache and php modules
+  remote_user: root
+  gather_facts: true
+  include: "{{ item }}.yml"
+  with_items:
+     - "{{ playbook_dir }}/roles/common/tasks/setup-apache"
+     - "{{ playbook_dir }}/roles/common/tasks/setup-php"
+     - "{{ playbook_dir }}/roles/common/tasks/deploy-app"
+     - "{{ playbook_dir }}/roles/common/tasks/webserver-firewall-rules"

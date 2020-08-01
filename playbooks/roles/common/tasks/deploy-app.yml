@@ -1,0 +1,27 @@
+- name: Ensure /var/www/html/css does not exist
+  file:
+    path: /var/www/html/css
+    state: absent
+
+- name: Ensure /var/www/html/css exists
+  file:
+    path: /var/www/html/css
+    mode: '0755'
+    state: directory
+
+- name: deploy app index.html
+  template:
+    src: "{{ playbook_dir }}/source/app/index.html.j2"
+    dest: "/var/www/html/index.html"
+
+- copy: src="{{ playbook_dir }}/source/app/{{ item }}" dest=/var/www/html
+  with_items:
+     - invalid_email.html
+     - invalid_name.html
+     - registration_complete.php
+
+- copy: src="{{ playbook_dir }}/source/app/css/{{ item }}" dest=/var/www/html/css
+  with_items:
+     - signin.css
+     - bootstrap.css
+     - bootstrap.min.css

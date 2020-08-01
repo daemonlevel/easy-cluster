@@ -1,0 +1,21 @@
+ssh_port: 22
+https_port: 443
+mysql_port: 3306
+
+mysql_user_name: mysql_operator
+mysql_user_password: "{{ vault_mysql_user_password }}"
+mysql_root_password: "{{ vault_mysql_root_password }}"
+operation_user_name: operator
+operation_user_password_hash: "{{ vault_operation_user_password_hash }}"
+
+database_name: "{{ vault_database_name }}"
+database_table_name: "{{ vault_database_table_name }}"
+
+self_signed_certs:
+  - key: "{{ playbook_dir }}/source/ssl/ssl.key"
+    cert: "{{ playbook_dir }}/source/ssl/ssl.crt"
+
+certificate_file_location: certs/ssl.crt
+certificate_key_location: certs/ssl.key
+templates_source: "{{ playbook_dir }}/source/apache-conf/"
+templates_destination: /etc/apache2/sites-available/

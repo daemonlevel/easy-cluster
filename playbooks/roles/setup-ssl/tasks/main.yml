@@ -1,0 +1,27 @@
+- name: Create apache cert directory
+  file:
+    path: /etc/apache2/certs
+    mode: '0744'
+    state: directory
+
+- copy: src="{{ playbook_dir }}/source/ssl/{{ item }}" dest=/etc/apache2/certs/
+  with_items:
+    - ssl.key
+    - ssl.crt
+
+- name: Copy apache default ssl conf
+  template:
+    src: "{{ templates_source }}/default-ssl.conf.j2"
+    dest: "{{ templates_destination }}/default-ssl.conf"
+
+- name: Copy apache default conf
+  template:
+    src: "{{ templates_source }}/000-default.conf.j2"
+    dest: "{{ templates_destination }}/000-default.conf"
+
+- apache2_module:
+    state: present
+    name: ssl
+
+- name: Enable apache ssl site
+  command: a2ensite default-ssl.conf

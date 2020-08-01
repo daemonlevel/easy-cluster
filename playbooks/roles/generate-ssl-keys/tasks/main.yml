@@ -1,0 +1,12 @@
+- name: Check if keys are already present
+  stat:
+    path: "{{ playbook_dir }}/source/ssl/ssl.key"
+  register: stat_result
+
+- name: Create certificate, if not already present
+  command: >
+    openssl req -x509 -nodes -subj '/CN=localhost' -days 365
+    -newkey rsa:4096 -sha256 -keyout {{ item.key }} -out {{ item.cert }}
+    creates={{ item.cert }}
+  with_items: "{{ self_signed_certs }}"
+  when: not stat_result.stat.exists

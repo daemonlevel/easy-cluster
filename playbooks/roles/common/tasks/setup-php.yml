@@ -1,0 +1,7 @@
+- name: Setup php
+  apt: pkg={{ item }} state=latest
+  with_items:
+     - libapache2-mod-php
+     - php-cli
+     - php-gd
+     - php-mysql

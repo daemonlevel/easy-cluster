@@ -1,0 +1,6 @@
+[app]
+appserver ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+
+[db]
+dbserver ansible_ssh_common_args='-o StrictHostKeyChecking=no'

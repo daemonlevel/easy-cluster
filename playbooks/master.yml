@@ -1,0 +1,39 @@
+- hosts: localhost
+  vars_files:
+    - group_vars/all/myvars.yml
+  gather_facts: True
+  roles:
+    - generate-ssl-keys
+
+- hosts: app
+  vars_files:
+    - group_vars/all/myvars.yml
+  gather_facts: True
+  roles:
+    - server-sec
+    - setup-webserver
+    - setup-ssl
+
+  tasks:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+
+- hosts: db
+  vars_files:
+    - group_vars/all/myvars.yml
+  gather_facts: True
+  roles:
+    - server-sec
+    - setup-dbserver
+    - setup-ssl
+
+  tasks:
+    - name: restart mysql and apache
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items:
+        - mysql
+        - apache2

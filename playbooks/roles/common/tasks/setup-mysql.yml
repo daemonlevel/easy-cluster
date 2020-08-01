@@ -1,0 +1,85 @@
+- name: setup mysql
+  apt: pkg={{ item }} state=latest
+  with_items:
+     - mysql-server
+     - libmysqlclient-dev
+     - python-mysqldb
+
+- name: Set root password
+  mysql_user: user=root password="{{ mysql_root_password }}" host=localhost
+
+- name: Remove anonymous Muser for ansible_fqdn
+  mysql_user: user="" host="{{ ansible_fqdn }}" state="absent"
+
+- name: Remove anonymous user for localhost
+  mysql_user: user="" state="absent"
+
+- name: Set root password for IPV6 localhost
+  mysql_user: user="root" password="{{ mysql_root_password }}" host="::1"
+
+- name: Set root password for 127.0.0.1
+  mysql_user: user="root" password="{{ mysql_root_password }}" host="127.0.0.1"
+
+- name: Set root password for localhost
+  mysql_user: user="root" password="{{ mysql_root_password }}" host="localhost"
+
+- name: Set root password for fqdn
+  mysql_user: user="root" password="{{ mysql_root_password }}" host="{{ ansible_fqdn }}"
+
+- name: Create database user
+  mysql_user: user="{{ mysql_user_name }}" password="{{ mysql_user_password }}" priv=*.*:ALL state=present
+
+- name: Remove test database
+  mysql_db:
+    name: test
+    state: absent
+
+- name: Ensure bind-address is set for all hosts
+  lineinfile:
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: bind-address		= 0.0.0.0
+
+- name: deploy sql source
+  template:
+    src: "{{ playbook_dir }}/source/sql/db.sql.j2"
+    dest: /tmp/db.sql
+- mysql_db: name=all state=import target=/tmp/db.sql
+
+- name: Clear /var/www/html/API/ directory
+  file:
+    path: /var/www/html/API/mysql/
+    state: absent
+
+- name: Create /API/mysql/ directory
+  file:
+    path: /var/www/html/API/mysql/
+    state: directory
+    mode: '0755'
+
+- name: Clear /var/www/html/API/mysql/css/ directory
+  file:
+    path: /var/www/html/API/mysql/css/
+    state: absent
+
+- name: Create /var/www/html/API/mysql/css/ directory
+  file:
+    path: /var/www/html/API/mysql/css/
+    mode: '0755'
+    state: directory
+
+- copy: src="{{ playbook_dir }}/source/app/css/{{ item }}" dest=/var/www/html/API/mysql/css/
+  with_items:
+     - signin.css
+     - bootstrap.css
+     - bootstrap.min.css
+
+- name: deploy api index.html
+  template:
+    src: "{{ playbook_dir }}/source/api/index.html.j2"
+    dest: "/var/www/html/index.html"
+
+- name: deploy api
+  template:
+    src: "{{ playbook_dir }}/source/api/register.php.j2"
+    dest: "/var/www/html/API/mysql/register.php"

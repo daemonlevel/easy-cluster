@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="app deploying with ansible!">
+    <meta name="author" content="Francis Robinson">
+    <title>Ormuco's Animal Adoption Institute</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/signin.css" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+          font-size: 1.125rem;
+          text-anchor: middle;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+
+        @media (min-width: 768px) {
+          .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+          }
+        }
+        </style>
+     <!-- Custom styles for this template -->
+
+   </head>
+   <body class="text-center">
+
+
+     <form action="https://{{ database_server_addr }}/API/mysql/register.php" method="post" class="form-signin">
+       <img class="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+
+       <h1 class="h3 mb-3 font-weight-normal">Fill up the form below to subscribe to our list!</h1>
+
+       <label for="inputName" class="sr-only">Contact Name</label>
+       <input type="text" name="inputName" class="form-control" placeholder="John Doe" required autofocus>
+
+       <label for="inputEmail" class="sr-only">Contact Email</label>
+       <input type="email" name="inputEmail" class="form-control" placeholder="John.Doe@aai.site.com" required><br>
+
+
+       <label for="inputPetChoice" class="sr-only">Pet Choice</label>
+
+       <div class="form-group" required>
+         <label for="inputPetChoice">Pet Choice</label>
+         <select class="form-control" name="inputPetChoice">
+           <option type="text" value="dog">Dog</option>
+           <option type="text" value="cat">Cat</option>
+         </select>
+       </div>
+
+       <label for="inputColor" class="sr-only">Bracelet color</label>
+
+       <div class="form-group" required>
+         <label for="inputPetChoice">Bracelet Color</label>
+         <select class="form-control" name="inputColor">
+           <option type="text" value="red">Red</option>
+           <option type="text" value="blue">Blue</option>
+           <option type="text" value="yellow">yellow</option>
+           <option type="text" value="green">green</option>
+         </select>
+       </div>
+
+
+       <div class="checkbox mb-3">
+         <label>
+           <input type="checkbox" value="I Agree" required> I agree and accept <a href="#">terms and conditions</a>
+         </label>
+       </div>
+
+       <button class="btn btn-lg btn-primary btn-block" type="submit">Subscribe</button>
+       <p class="mt-5 mb-3 text-muted">&copy; 2020</p>
+
+     </form>
+
+   </body>
+</html>

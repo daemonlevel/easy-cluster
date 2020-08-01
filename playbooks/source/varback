@@ -1,0 +1,25 @@
+
+ssh_port: 22
+https_port: 443
+mysql_port: 3306
+
+mysql_user_name: mysql_operator
+mysql_user_password: mysql_operat0r
+mysql_root_password: r00t_pa$$
+operation_user_name: operator
+operation_user_password_hash: $6$2dniBO5JkELF$UVpPZJmb6Ccr7MV8mqa8LhY5i2zRT3UDzNxcnvwX.HYtmOFcM6QTIPWKpN1OlpjW8UuumP0zUDq1a1YYvSf1t1
+
+application_server_addr: 68.183.197.219
+database_server_addr: 165.227.47.32
+
+database_name: animalstore
+database_table_name: customers
+
+self_signed_certs:
+  - key: "{{ playbook_dir }}/source/ssl/ssl.key"
+    cert: "{{ playbook_dir }}/source/ssl/ssl.crt"
+
+certificate_file_location: certs/ssl.crt
+certificate_key_location: certs/ssl.key
+templates_source: "{{ playbook_dir }}/source/apache-conf/"
+templates_destination: /etc/apache2/sites-available/

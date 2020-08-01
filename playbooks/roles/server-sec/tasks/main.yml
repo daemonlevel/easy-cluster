@@ -1,0 +1,75 @@
+- name: Install aptitude
+  apt: name=aptitude state=latest
+
+- name: Update and upgrade packages
+  apt: upgrade=yes update_cache=yes cache_valid_time=86400
+
+- name: Create operation user
+  user:
+    name: "{{ operation_user_name }}"
+    shell: /bin/bash
+    password: "{{ operation_user_password_hash }}"
+
+- name: Set authorized key
+  authorized_key:
+    user: "{{ operation_user_name }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/{{ operation_user_name }}.pub') }}"
+
+- name: Set permissions on operation user's .ssh/authorized_keys
+  file:
+    path: "/home/{{ operation_user_name }}/.ssh/authorized_keys"
+    owner: "{{ operation_user_name }}"
+    group: "{{ operation_user_name }}"
+    mode: '0400'
+
+- name: Add operation user to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%{{ operation_user_name }}"
+    line: "%{{ operation_user_name }} ALL=(ALL) ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Disable admin group in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    state: absent
+    regexp: "^%admin"
+    line: "#%admin ALL=(ALL) ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Disable sudo group in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    state: absent
+    regexp: "^%sudo"
+    line: "#%sudo ALL=(ALL) ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Disable root login via password
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+
+- name: Disable PasswordAuthentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+
+- name: Install unattended-upgrades package
+  apt:
+    name: unattended-upgrades
+    update_cache: yes
+
+- name: Enable periodic updates
+  copy:
+    src: "{{ playbook_dir }}/source/apt/10periodic"
+    dest: /etc/apt/apt.conf.d/10periodic
+    owner: root
+    group: root
+    mode: '0644'

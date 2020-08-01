@@ -1,0 +1,13 @@
+- name: Ensure only ports 22, 443 and 3306 are open on dbserver
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  with_items:
+    - "{{ ssh_port }}"
+    - "{{ https_port }}"
+    - "{{ mysql_port }}"
+
+- name: Enable ufw
+  ufw:
+    state: enabled
